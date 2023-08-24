@@ -1,0 +1,9 @@
+Development Outline
+===================
+
+1. Use only the following assets
+  1. "Void Blaster" by surt CC0
+  2. "8-bit platformer SFX" by bart CC-BY 3.0
+  3. "NES Shooter Music" by SketchyLogic CC0
+2. Ten levels, five each of cave and outdoors
+3. Enemies with varied movement and shooting patterns
