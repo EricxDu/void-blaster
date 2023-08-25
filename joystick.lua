@@ -36,10 +36,10 @@ function lutro.joystickpressed(n, b)
     Joystick.dr = true
   elseif b == 8 then
     Joystick.cr = true
-    Joystick.fire2()
+    Joystick.fire1()
   elseif b == 9 then
     Joystick.cu = true
-    Joystick.fire1()
+    Joystick.fire2()
   end
 end
 

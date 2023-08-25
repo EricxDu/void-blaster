@@ -1,26 +1,26 @@
 --[[
-Bullet is a physics object representing ballistic munitions.
+Enemy0 is a physics object representing a destructible adversary.
 --]]
-local LEFT = 0
+local LEFT = -24
 local TOP = 0
 local RIGHT = 256
 local BOTTOM = 192
 
-local Bullet = {
+local Enemy0 = {
   x = 0,
   y = 0,
   dx = 0,
   dy = 0
 }
 
-function Bullet:new (o)
+function Enemy0:new (o)
   o = o or {}
   setmetatable(o, self)
   self.__index = self
   return o
 end
 
-function Bullet:move(dt)
+function Enemy0:move(dt)
   if self.x > LEFT and self.x < RIGHT then
     self.x = self.x + self.dx * dt
   end
@@ -29,13 +29,4 @@ function Bullet:move(dt)
   end
 end
 
-function Bullet:ready()
-  if self.x <= LEFT or self.x >= RIGHT then
-    return true
-  end
-  if self.y <= TOP or self.y >= BOTTOM then
-    return true
-  end
-end
-
-return Bullet
+return Enemy0

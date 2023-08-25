@@ -1,6 +1,11 @@
 --[[
-Ship is a physics object representing the player's shooting starship.
+Ship is a physics object representing the player's starship.
 --]]
+LEFT = 0
+TOP = 32
+RIGHT = 232
+BOTTOM = 160
+
 local Ship = {
   x = 0,
   y = 0,
@@ -31,21 +36,21 @@ function Ship:decel(dt)
   self.dy = self.dy * 0.90
 end
 
-function Ship:move(dt, left, top, right, bottom)
+function Ship:move(dt)
   self.x = self.x + self.dx * dt
   self.y = self.y + self.dy * dt
-  if self.x < left then
-    self.x = left
+  if self.x < LEFT then
+    self.x = LEFT
     self.dx = 0
-  elseif self.x > right then
-    self.x = right
+  elseif self.x > RIGHT then
+    self.x = RIGHT
     self.dx = 0
   end
-  if self.y < top then
-    self.y = top
+  if self.y < TOP then
+    self.y = TOP
     self.dy = 0
-  elseif self.y > bottom then
-    self.y = bottom
+  elseif self.y > BOTTOM then
+    self.y = BOTTOM
     self.dy = 0
   end
 end

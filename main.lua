@@ -1,18 +1,19 @@
 Bullet = require'bullet'
+Enemy0 = require'enemy0'
 Joystick = require'joystick'
 Level = require'level'
 Ship = require'ship'
 
-global_start = lutro.timer.getTime()
+global_progress = 0
 
-iPage = lutro.graphics.newImage("page00.png")
+global_drawable0 = lutro.graphics.newImage("page00.png")
 qBomb = lutro.graphics.newQuad(64, 488, 8, 8, 1024, 768)
 qBullet1 = lutro.graphics.newQuad(96, 464, 8, 8, 1024, 768)
 qBullet2 = lutro.graphics.newQuad(296, 432, 8, 8, 1024, 768)
 qBullet3 = lutro.graphics.newQuad(96, 520, 8, 8, 1024, 768)
 qFlame = lutro.graphics.newQuad(64, 456, 8, 16, 1024, 768)
 qLevel = lutro.graphics.newQuad(0, 224, 256, 160, 1024, 768)
-qPanel = lutro.graphics.newQuad(0, 192, 256, 32, 1024, 768)
+qPanel = lutro.graphics.newQuad(0, 0, 256, 32, 1024, 768)
 qEnemy1 = lutro.graphics.newQuad(320, 424, 24, 16, 1024, 768)
 qDeath1 = lutro.graphics.newQuad(352, 496, 16, 16, 1024, 768)
 qDeath2 = lutro.graphics.newQuad(368, 496, 16, 16, 1024, 768)
@@ -30,21 +31,25 @@ player0 = Ship:new{
 }
 
 bullets0 = {
-  Bullet:new{iPage, qBullet1, x = 256, y = 256, dx = 150},
-  Bullet:new{iPage, qBullet1, x = 256, y = 256, dx = 150},
-  Bullet:new{iPage, qBullet1, x = 256, y = 256, dx = 150},
-  Bullet:new{iPage, qBullet1, x = 256, y = 256, dx = 150},
-  Bullet:new{iPage, qBullet1, x = 256, y = 256, dx = 150},
-  Bullet:new{iPage, qBomb, x = 256, y = 256, dy = 100},
-  Bullet:new{iPage, qBomb, x = 256, y = 256, dy = 100},
-  Bullet:new{iPage, qBomb, x = 256, y = 256, dy = 100},
-  Bullet:new{iPage, qBomb, x = 256, y = 256, dy = 100},
-  Bullet:new{iPage, qBomb, x = 256, y = 256, dy = 100},
+  Bullet:new{global_drawable0, qBullet1, x = 256, y = 256, dx = 150},
+  Bullet:new{global_drawable0, qBullet1, x = 256, y = 256, dx = 150},
+  Bullet:new{global_drawable0, qBullet1, x = 256, y = 256, dx = 150},
+  Bullet:new{global_drawable0, qBullet1, x = 256, y = 256, dx = 150},
+  Bullet:new{global_drawable0, qBullet1, x = 256, y = 256, dx = 150},
+  Bullet:new{global_drawable0, qBomb, x = 256, y = 256, dy = 100},
+  Bullet:new{global_drawable0, qBomb, x = 256, y = 256, dy = 100},
+  Bullet:new{global_drawable0, qBomb, x = 256, y = 256, dy = 100},
+  Bullet:new{global_drawable0, qBomb, x = 256, y = 256, dy = 100},
+  Bullet:new{global_drawable0, qBomb, x = 256, y = 256, dy = 100},
 }
 
+global_enemies0 = {}
+
 function lutro.load()
-  levelmap = Level:new{5, 11, 17, 23, 29, 35, 41, 47, 53, 59}
-  global_start = lutro.timer.getTime()
+  global_enemies0 = {}
+  global_level = Level:new()
+  global_level.queue = global_level:next()
+  global_progress = 0
 end
 
 function lutro.update(dt)
@@ -58,7 +63,7 @@ function lutro.update(dt)
   elseif Joystick.dr then
     player0:accel(dt, 0)
   end
-  player0:move(dt, 4, 36, 228, 156)
+  player0:move(dt)
   player0[3] = player0.x
   player0[4] = player0.y
   player0:decel(dt)
@@ -67,20 +72,37 @@ function lutro.update(dt)
     obj[3] = obj.x
     obj[4] = obj.y
   end
-  offset = math.floor(lutro.timer.getTime() * 50 - global_start) % 512
-  qLevel:setViewport(offset, 32, 256, 160)
-  local spawn = Level:next_spawn(lutro.timer.getTime() - global_start)
-  if spawn then
-    print(spawn)
+  for i, obj in ipairs(global_enemies0) do
+    obj:move(dt)
+    obj[3] = obj.x
+    obj[4] = obj.y
   end
+  offset = math.floor(global_progress * 50) % 512
+  qLevel:setViewport(offset, 32, 256, 160)
+  local spawn = global_level:spawn(global_progress)
+  if spawn then
+    local enemy = Enemy0:new{
+      global_drawable0,
+      qEnemy1,
+      x = 255,
+      y = spawn.height,
+      dx = spawn.dx,
+      dy = spawn.dy
+    }
+    table.insert(global_enemies0, enemy)
+  end
+  global_progress = global_progress + dt
 end
 
 function lutro.draw()
   lutro.graphics.translate(32, 24)
-  lutro.graphics.draw(iPage, qPanel, 0, 0)
-  lutro.graphics.draw(iPage, qLevel, 0, 32)
+  lutro.graphics.draw(global_drawable0, qPanel, 0, 0)
+  lutro.graphics.draw(global_drawable0, qLevel, 0, 32)
   lutro.graphics.draw(unpack(player0))
   for i, obj in ipairs(bullets0) do
+    lutro.graphics.draw(unpack(obj))
+  end
+  for i, obj in ipairs(global_enemies0) do
     lutro.graphics.draw(unpack(obj))
   end
 end
