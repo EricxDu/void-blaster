@@ -1,12 +1,12 @@
 --[[
-Ship is a physics object representing the player's starship.
+Blaster is a physics object representing the player's gunship.
 --]]
 LEFT = 0
 TOP = 32
-RIGHT = 232
+RIGHT = 224
 BOTTOM = 160
 
-local Ship = {
+local Blaster = {
   x = 0,
   y = 0,
   dx = 0,
@@ -15,14 +15,14 @@ local Ship = {
   max_speed = 100
 }
 
-function Ship:new (o)
+function Blaster:new (o)
   o = o or {}
   setmetatable(o, self)
   self.__index = self
   return o
 end
 
-function Ship:accel(dx, dy)
+function Blaster:accel(dx, dy)
   if math.abs(self.dx) < self.max_speed then
     self.dx = self.dx + dx * self.speed
   end
@@ -31,12 +31,12 @@ function Ship:accel(dx, dy)
   end
 end
 
-function Ship:decel(dt)
+function Blaster:decel(dt)
   self.dx = self.dx * 0.90
   self.dy = self.dy * 0.90
 end
 
-function Ship:move(dt)
+function Blaster:move(dt)
   self.x = self.x + self.dx * dt
   self.y = self.y + self.dy * dt
   if self.x < LEFT then
@@ -55,4 +55,4 @@ function Ship:move(dt)
   end
 end
 
-return Ship
+return Blaster

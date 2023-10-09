@@ -1,14 +1,14 @@
-Bullet = require'bullet'
+Weapon = require'weapon'
 Enemy0 = require'enemy0'
 Joystick = require'joystick'
 Level = require'level'
-Ship = require'ship'
+Blaster = require'blaster'
 
 global_progress = 0
 
 global_drawable0 = lutro.graphics.newImage("page00.png")
-qBomb = lutro.graphics.newQuad(64, 488, 8, 8, 1024, 768)
-qBullet1 = lutro.graphics.newQuad(96, 464, 8, 8, 1024, 768)
+qBomb0 = lutro.graphics.newQuad(64, 488, 8, 8, 1024, 768)
+qGun0 = lutro.graphics.newQuad(96, 464, 8, 8, 1024, 768)
 qBullet2 = lutro.graphics.newQuad(296, 432, 8, 8, 1024, 768)
 qBullet3 = lutro.graphics.newQuad(96, 520, 8, 8, 1024, 768)
 qFlame = lutro.graphics.newQuad(64, 456, 8, 16, 1024, 768)
@@ -17,30 +17,31 @@ qPanel = lutro.graphics.newQuad(0, 0, 256, 32, 1024, 768)
 qEnemy1 = lutro.graphics.newQuad(320, 424, 24, 16, 1024, 768)
 qDeath1 = lutro.graphics.newQuad(352, 496, 16, 16, 1024, 768)
 qDeath2 = lutro.graphics.newQuad(368, 496, 16, 16, 1024, 768)
-qGun1 = lutro.graphics.newQuad(176, 552, 16, 8, 1024, 768)
-qGun2 = lutro.graphics.newQuad(336, 552, 16, 8, 1024, 768)
-qGun3 = lutro.graphics.newQuad(464, 552, 16, 8, 1024, 768)
-qTank = lutro.graphics.newQuad(256, 568, 16, 8, 1024, 768)
-qRocket = lutro.graphics.newQuad(944, 440, 16, 8, 1024, 768)
+qTurret1 = lutro.graphics.newQuad(176, 552, 16, 8, 1024, 768)
+qTurret2 = lutro.graphics.newQuad(336, 552, 16, 8, 1024, 768)
+qTurret3 = lutro.graphics.newQuad(464, 552, 16, 8, 1024, 768)
+qTruck0 = lutro.graphics.newQuad(256, 568, 16, 8, 1024, 768)
+qRocket0 = lutro.graphics.newQuad(944, 440, 16, 8, 1024, 768)
 
-player0 = Ship:new{
+player0 = Blaster:new{
   lutro.graphics.newImage("page00.png"),
   lutro.graphics.newQuad(72, 448, 24, 32, 1024, 768),
+  0, 0, 0, 1, 1, 0,
   x = 100,
   y = 100
 }
 
 bullets0 = {
-  Bullet:new{global_drawable0, qBullet1, x = 256, y = 256, dx = 150},
-  Bullet:new{global_drawable0, qBullet1, x = 256, y = 256, dx = 150},
-  Bullet:new{global_drawable0, qBullet1, x = 256, y = 256, dx = 150},
-  Bullet:new{global_drawable0, qBullet1, x = 256, y = 256, dx = 150},
-  Bullet:new{global_drawable0, qBullet1, x = 256, y = 256, dx = 150},
-  Bullet:new{global_drawable0, qBomb, x = 256, y = 256, dy = 100},
-  Bullet:new{global_drawable0, qBomb, x = 256, y = 256, dy = 100},
-  Bullet:new{global_drawable0, qBomb, x = 256, y = 256, dy = 100},
-  Bullet:new{global_drawable0, qBomb, x = 256, y = 256, dy = 100},
-  Bullet:new{global_drawable0, qBomb, x = 256, y = 256, dy = 100},
+  Weapon:new{global_drawable0, qGun0, x = 256, y = 256, dx = 150},
+  Weapon:new{global_drawable0, qGun0, x = 256, y = 256, dx = 150},
+  Weapon:new{global_drawable0, qGun0, x = 256, y = 256, dx = 150},
+  Weapon:new{global_drawable0, qGun0, x = 256, y = 256, dx = 150},
+  Weapon:new{global_drawable0, qGun0, x = 256, y = 256, dx = 150},
+  Weapon:new{global_drawable0, qBomb0, x = 256, y = 256, dy = 100},
+  Weapon:new{global_drawable0, qBomb0, x = 256, y = 256, dy = 100},
+  Weapon:new{global_drawable0, qBomb0, x = 256, y = 256, dy = 100},
+  Weapon:new{global_drawable0, qBomb0, x = 256, y = 256, dy = 100},
+  Weapon:new{global_drawable0, qBomb0, x = 256, y = 256, dy = 100},
 }
 
 global_enemies0 = {}
@@ -48,7 +49,7 @@ global_enemies0 = {}
 function lutro.load()
   global_enemies0 = {}
   global_level = Level:new()
-  global_level.queue = global_level:next()
+  global_queue = global_level:next()
   global_progress = 0
 end
 
@@ -62,6 +63,13 @@ function lutro.update(dt)
     player0:accel(-dt, 0)
   elseif Joystick.dr then
     player0:accel(dt, 0)
+  end
+  if math.floor(lutro.timer.getTime() * 100 % 2) == 0 then
+    player0[2]:setViewport(64, 448, 32, 32)
+    player0[8] = 0
+  else
+    player0[2]:setViewport(72, 448, 24, 32)
+    player0[8] = 8
   end
   player0:move(dt)
   player0[3] = player0.x
@@ -79,7 +87,7 @@ function lutro.update(dt)
   end
   offset = math.floor(global_progress * 50) % 512
   qLevel:setViewport(offset, 32, 256, 160)
-  local spawn = global_level:spawn(global_progress)
+  local spawn = global_queue(global_progress)
   if spawn then
     local enemy = Enemy0:new{
       global_drawable0,
